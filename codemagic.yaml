@@ -30,6 +30,10 @@ workflows:
       - name: Add iOS platform (ilk sefer)
         script: |
           npx cap add ios || true
+      - name: Generate app icons and splash screens
+        script: |
+          npm install @capacitor/assets --save-dev
+          npx capacitor-assets generate --iconBackgroundColor '#0f5c35' --splashBackgroundColor '#0f5c35' --iconBackgroundColorDark '#0f5c35' --splashBackgroundColorDark '#0f5c35'
       - name: Sync Capacitor with iOS project
         script: |
           npx cap sync ios
