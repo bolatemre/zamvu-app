@@ -1,0 +1,9 @@
+{
+  "appId": "com.zamvu.app",
+  "appName": "Zamvu",
+  "webDir": "www",
+  "server": {
+    "url": "https://zamvu.com",
+    "cleartext": false
+  }
+}
