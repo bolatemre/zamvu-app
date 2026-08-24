@@ -53,6 +53,19 @@ workflows:
         script: |
           /usr/libexec/PlistBuddy -c "Delete :ITSAppUsesNonExemptEncryption" ios/App/App/Info.plist 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" ios/App/App/Info.plist
+      - name: Add camera and photo library permissions (uygulama kapanma sorunu)
+        script: |
+          PLIST=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Delete :NSCameraUsageDescription" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'Zamvu, ilanına fotoğraf eklemek için kameranı kullanmak istiyor.'" $PLIST
+          /usr/libexec/PlistBuddy -c "Delete :NSPhotoLibraryUsageDescription" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'Zamvu, ilanına fotoğraf eklemek için galerine erişmek istiyor.'" $PLIST
+          /usr/libexec/PlistBuddy -c "Delete :NSPhotoLibraryAddUsageDescription" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryAddUsageDescription string 'Zamvu, çektiğin fotoğrafları galerine kaydetmek için izin istiyor.'" $PLIST
+          /usr/libexec/PlistBuddy -c "Delete :NSMicrophoneUsageDescription" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string 'Zamvu, video çekimi sırasında mikrofonunu kullanmak isteyebilir.'" $PLIST
+          /usr/libexec/PlistBuddy -c "Delete :NSLocationWhenInUseUsageDescription" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'Zamvu, ilanına konum eklemek için yerini kullanmak istiyor.'" $PLIST
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" --type IOS_APP_STORE --create
