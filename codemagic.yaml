@@ -37,6 +37,15 @@ workflows:
       - name: Sync Capacitor with iOS project
         script: |
           npx cap sync ios
+      - name: Copy GoogleService-Info.plist (Firebase push notifications)
+        script: |
+          cp ios-config/GoogleService-Info.plist ios/App/App/GoogleService-Info.plist
+      - name: Enable background push notifications
+        script: |
+          PLIST=ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Delete :UIBackgroundModes" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string remote-notification" $PLIST
       - name: Install CocoaPods
         script: |
           cd ios/App && pod install
