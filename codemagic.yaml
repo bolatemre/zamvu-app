@@ -40,6 +40,28 @@ workflows:
       - name: Copy GoogleService-Info.plist (Firebase push notifications)
         script: |
           cp ios-config/GoogleService-Info.plist ios/App/App/GoogleService-Info.plist
+      - name: Add push notification entitlement (KESIN cozum)
+        script: |
+          cat > ios/App/App/App.entitlements << 'ENTEOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+          	<key>aps-environment</key>
+          	<string>production</string>
+          </dict>
+          </plist>
+          ENTEOF
+          cat > /tmp/add_entitlements.rb << 'RBEOF'
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('ios/App/App.xcodeproj')
+          target = project.targets.first
+          target.build_configurations.each do |config|
+            config.build_settings['CODE_SIGN_ENTITLEMENTS'] = 'App/App.entitlements'
+          end
+          project.save
+          RBEOF
+          ruby /tmp/add_entitlements.rb
       - name: Enable background push notifications
         script: |
           PLIST=ios/App/App/Info.plist
