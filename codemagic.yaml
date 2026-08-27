@@ -97,6 +97,8 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :NSMicrophoneUsageDescription string 'Zamvu, video çekimi sırasında mikrofonunu kullanmak isteyebilir.'" $PLIST
           /usr/libexec/PlistBuddy -c "Delete :NSLocationWhenInUseUsageDescription" $PLIST 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'Zamvu, ilanına konum eklemek için yerini kullanmak istiyor.'" $PLIST
+          /usr/libexec/PlistBuddy -c "Delete :NSSpeechRecognitionUsageDescription" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSSpeechRecognitionUsageDescription string 'Zamvu, sesli ilan oluşturman için konuşmanı yazıya çevirmek istiyor.'" $PLIST
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" --type IOS_APP_STORE --create
