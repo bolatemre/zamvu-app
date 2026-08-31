@@ -49,6 +49,9 @@ workflows:
           project.save
           RBEOF
           ruby /tmp/set_deployment_target.rb
+          if [ -f ios/App/Podfile ]; then
+            sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.0'/" ios/App/Podfile
+          fi
       - name: Sync Capacitor with iOS project
         script: |
           npx cap sync ios
