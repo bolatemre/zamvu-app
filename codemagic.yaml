@@ -99,6 +99,12 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'Zamvu, ilanına konum eklemek için yerini kullanmak istiyor.'" $PLIST
           /usr/libexec/PlistBuddy -c "Delete :NSSpeechRecognitionUsageDescription" $PLIST 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :NSSpeechRecognitionUsageDescription string 'Zamvu, sesli ilan oluşturman için konuşmanı yazıya çevirmek istiyor.'" $PLIST
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" $PLIST 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string zamvu" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string com.zamvu.app" $PLIST
       - name: Fetch signing files
         script: |
           app-store-connect fetch-signing-files "$BUNDLE_IDENTIFIER" --type IOS_APP_STORE --create
