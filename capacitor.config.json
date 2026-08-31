@@ -13,6 +13,10 @@
       "backgroundColor": "#0f5c35",
       "showSpinner": false,
       "androidScaleType": "CENTER_CROP"
+    },
+    "GoogleAuth": {
+      "iosClientId": "670703297575-s8bona5d3dsjqns38qnaglgipr9qgjgk.apps.googleusercontent.com",
+      "scopes": ["profile", "email"]
     }
   }
 }
