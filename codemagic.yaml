@@ -108,6 +108,9 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" $PLIST
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" $PLIST
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string zamvu" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:1 dict" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:1:CFBundleURLSchemes array" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:1:CFBundleURLSchemes:0 string com.googleusercontent.apps.670703297575-s8bona5d3dsjqns38qnaglgipr9qgjgk" $PLIST
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string com.zamvu.app" $PLIST
       - name: Fetch signing files
         script: |
