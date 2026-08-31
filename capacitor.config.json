@@ -14,9 +14,13 @@
       "showSpinner": false,
       "androidScaleType": "CENTER_CROP"
     },
-    "GoogleAuth": {
-      "iosClientId": "670703297575-s8bona5d3dsjqns38qnaglgipr9qgjgk.apps.googleusercontent.com",
-      "scopes": ["profile", "email"]
+    "SocialLogin": {
+      "providers": {
+        "google": true,
+        "apple": true,
+        "facebook": false,
+        "twitter": false
+      }
     }
   }
 }
