@@ -34,6 +34,21 @@ workflows:
         script: |
           npm install @capacitor/assets --save-dev
           npx capacitor-assets generate --iconBackgroundColor '#0f5c35' --splashBackgroundColor '#0f5c35' --iconBackgroundColorDark '#0f5c35' --splashBackgroundColorDark '#0f5c35'
+      - name: Raise minimum iOS version (capgo/social-login gereksinimi)
+        script: |
+          cat > /tmp/set_deployment_target.rb << 'RBEOF'
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('ios/App/App.xcodeproj')
+          target = project.targets.first
+          target.build_configurations.each do |config|
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+          end
+          project.root_object.build_configuration_list.build_configurations.each do |config|
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+          end
+          project.save
+          RBEOF
+          ruby /tmp/set_deployment_target.rb
       - name: Sync Capacitor with iOS project
         script: |
           npx cap sync ios
@@ -66,10 +81,6 @@ workflows:
           target = project.targets.first
           target.build_configurations.each do |config|
             config.build_settings['CODE_SIGN_ENTITLEMENTS'] = 'App/App.entitlements'
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
-          end
-          project.root_object.build_configuration_list.build_configurations.each do |config|
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
           end
           project.save
           RBEOF
