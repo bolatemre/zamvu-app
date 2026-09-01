@@ -64,7 +64,8 @@ workflows:
             puts 'AppDelegate.swift zaten guncel, atlaniyor.'
           end
           RBEOF
-          ruby /tmp/patch_appdelegate.rb
+          echo 'GECICI OLARAK DEVRE DISI - cokme testi icin'
+          # ruby /tmp/patch_appdelegate.rb
       - name: Raise minimum iOS version (capgo/social-login gereksinimi)
         script: |
           cat > /tmp/set_deployment_target.rb << 'RBEOF'
