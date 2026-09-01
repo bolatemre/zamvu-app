@@ -21,9 +21,6 @@
         "facebook": false,
         "twitter": false
       }
-    },
-    "FirebaseMessaging": {
-      "presentationOptions": ["alert", "badge", "sound"]
     }
   }
 }
