@@ -71,12 +71,16 @@ workflows:
 
           unless content.include?('FirebaseApp.configure')
             content = content.sub('import Capacitor', "import Capacitor\nimport FirebaseCore")
-            content = content.sub(
-              /(func application\(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions:[^)]*\)[^{]*\{)/,
-              "\\1\n        FirebaseApp.configure()"
-            )
+
+            property = <<~SWIFT
+
+                private let _firebaseConfigured: Void = { FirebaseApp.configure() }()
+            SWIFT
+
+            last_brace_index = content.rindex('}')
+            content = content[0...last_brace_index] + property + "}" + content[(last_brace_index + 1)..-1].to_s
             File.write(path, content)
-            puts 'FirebaseApp.configure() eklendi.'
+            puts 'FirebaseApp.configure() (sinif ozelligi olarak) eklendi.'
           else
             puts 'FirebaseApp.configure() zaten var, atlaniyor.'
           end
