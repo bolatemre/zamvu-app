@@ -64,8 +64,24 @@ workflows:
             puts 'AppDelegate.swift zaten guncel, atlaniyor.'
           end
           RBEOF
-          echo 'GECICI OLARAK DEVRE DISI - cokme testi icin'
-          # ruby /tmp/patch_appdelegate.rb
+          ruby /tmp/patch_appdelegate.rb
+          cat > /tmp/add_firebase_configure.rb << 'RBEOF2'
+          path = 'ios/App/App/AppDelegate.swift'
+          content = File.read(path)
+
+          unless content.include?('FirebaseApp.configure')
+            content = content.sub('import Capacitor', "import Capacitor\nimport FirebaseCore")
+            content = content.sub(
+              /(func application\(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions:[^)]*\)[^{]*\{)/,
+              "\\1\n        FirebaseApp.configure()"
+            )
+            File.write(path, content)
+            puts 'FirebaseApp.configure() eklendi.'
+          else
+            puts 'FirebaseApp.configure() zaten var, atlaniyor.'
+          end
+          RBEOF2
+          ruby /tmp/add_firebase_configure.rb
       - name: Raise minimum iOS version (capgo/social-login gereksinimi)
         script: |
           cat > /tmp/set_deployment_target.rb << 'RBEOF'
