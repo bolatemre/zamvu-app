@@ -34,6 +34,37 @@ workflows:
         script: |
           npm install @capacitor/assets --save-dev
           npx capacitor-assets generate --iconBackgroundColor '#0f5c35' --splashBackgroundColor '#0f5c35' --iconBackgroundColorDark '#0f5c35' --splashBackgroundColorDark '#0f5c35'
+      - name: Add Firebase Messaging AppDelegate hooks
+        script: |
+          cat > /tmp/patch_appdelegate.rb << 'RBEOF'
+          path = 'ios/App/App/AppDelegate.swift'
+          content = File.read(path)
+
+          unless content.include?('capacitorDidRegisterForRemoteNotifications')
+            methods = <<~SWIFT
+
+                func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+                    NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+                }
+
+                func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+                    NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+                }
+
+                func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+                    NotificationCenter.default.post(name: Notification.Name.init("didReceiveRemoteNotification"), object: completionHandler, userInfo: userInfo)
+                }
+            SWIFT
+
+            last_brace_index = content.rindex('}')
+            content = content[0...last_brace_index] + methods + "\n}" + content[(last_brace_index + 1)..-1].to_s
+            File.write(path, content)
+            puts 'AppDelegate.swift guncellendi.'
+          else
+            puts 'AppDelegate.swift zaten guncel, atlaniyor.'
+          end
+          RBEOF
+          ruby /tmp/patch_appdelegate.rb
       - name: Raise minimum iOS version (capgo/social-login gereksinimi)
         script: |
           cat > /tmp/set_deployment_target.rb << 'RBEOF'
