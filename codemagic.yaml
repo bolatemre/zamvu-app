@@ -1,3 +1,4 @@
+
 workflows:
   ios-workflow:
     name: Zamvu iOS Workflow
@@ -156,3 +157,49 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+
+  android-workflow:
+    name: Zamvu Android Workflow
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      vars:
+        PACKAGE_NAME: com.zamvu.app
+      node: latest
+      java: 17
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm install
+      - name: Add Android platform (ilk sefer)
+        script: |
+          npx cap add android || true
+      - name: Generate app icons and splash screens
+        script: |
+          npm install @capacitor/assets --save-dev
+          npx capacitor-assets generate --android --iconBackgroundColor '#0f5c35' --splashBackgroundColor '#0f5c35' --iconBackgroundColorDark '#0f5c35' --splashBackgroundColorDark '#0f5c35'
+      - name: Sync Capacitor with Android project
+        script: |
+          npx cap sync android
+      - name: Copy google-services.json (Firebase push notifications, varsa)
+        script: |
+          if [ -f android-config/google-services.json ]; then
+            cp android-config/google-services.json android/app/google-services.json
+          else
+            echo "android-config/google-services.json bulunamadı, bu adım atlanıyor (push bildirimleri Android'de henüz devrede değil)."
+          fi
+      - name: Build debug APK
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+    artifacts:
+      - android/app/build/outputs/apk/debug/*.apk
+      - android/app/build/outputs/**/*.aab
