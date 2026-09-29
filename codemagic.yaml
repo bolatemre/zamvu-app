@@ -225,3 +225,87 @@ workflows:
     artifacts:
       - android/app/build/outputs/apk/debug/*.apk
       - android/app/build/outputs/**/*.aab
+
+  android-release-workflow:
+    name: Zamvu Android Release (AAB)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      groups:
+        - code-signing
+      vars:
+        PACKAGE_NAME: com.zamvu.app
+      node: latest
+      java: 17
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm install
+      - name: Add Android platform (ilk sefer)
+        script: |
+          npx cap add android || true
+      - name: Generate app icons and splash screens
+        script: |
+          npm install @capacitor/assets --save-dev
+          npx capacitor-assets generate --android --iconBackgroundColor '#0f5c35' --splashBackgroundColor '#0f5c35' --iconBackgroundColorDark '#0f5c35' --splashBackgroundColorDark '#0f5c35'
+      - name: Sync Capacitor with Android project
+        script: |
+          npx cap sync android
+      - name: Copy google-services.json (Firebase push notifications, varsa)
+        script: |
+          if [ -f android-config/google-services.json ]; then
+            cp android-config/google-services.json android/app/google-services.json
+          else
+            echo "android-config/google-services.json bulunamadı, bu adım atlanıyor."
+          fi
+      - name: Decode release keystore and configure signing + versionCode
+        script: |
+          echo "$CM_KEYSTORE" | base64 --decode > android/app/release.keystore
+          cat > /tmp/patch_release_signing.js << 'NODEEOF'
+          const fs = require('fs');
+          const path = 'android/app/build.gradle';
+          let content = fs.readFileSync(path, 'utf8');
+
+          const androidMarker = 'android {';
+          const aIdx = content.indexOf(androidMarker);
+          if (aIdx === -1) { console.error('UYARI: "android {" bulunamadi.'); process.exit(1); }
+          const signingInsertion = `\n    signingConfigs {\n        release {\n            storeFile file('release.keystore')\n            storePassword System.getenv("CM_KEYSTORE_PASSWORD")\n            keyAlias System.getenv("CM_KEY_ALIAS")\n            keyPassword System.getenv("CM_KEY_PASSWORD")\n        }\n    }\n`;
+          const aInsertAt = aIdx + androidMarker.length;
+          content = content.slice(0, aInsertAt) + signingInsertion + content.slice(aInsertAt);
+
+          const releaseMarker = 'release {';
+          const rIdx = content.indexOf(releaseMarker);
+          if (rIdx !== -1) {
+            const rInsertAt = rIdx + releaseMarker.length;
+            content = content.slice(0, rInsertAt) + `\n            signingConfig signingConfigs.release` + content.slice(rInsertAt);
+          } else {
+            console.error('UYARI: buildTypes.release blogu bulunamadi, signingConfig atanamadi.');
+          }
+
+          const buildNumber = process.env.CM_BUILD_NUMBER || '1';
+          if (/versionCode\s+\d+/.test(content)) {
+            content = content.replace(/versionCode\s+\d+/, 'versionCode ' + buildNumber);
+            console.log('versionCode ' + buildNumber + ' olarak ayarlandi.');
+          } else {
+            console.error('UYARI: versionCode satiri bulunamadi.');
+          }
+
+          fs.writeFileSync(path, content);
+          console.log('build.gradle release signingConfig ile guncellendi.');
+          NODEEOF
+          node /tmp/patch_release_signing.js
+          cat android/app/build.gradle | grep -A6 "signingConfigs\|versionCode"
+      - name: Build release AAB
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew bundleRelease
+    artifacts:
+      - android/app/build/outputs/bundle/release/*.aab
