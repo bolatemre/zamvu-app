@@ -316,7 +316,9 @@ workflows:
             }
           }
 
-          const buildNumber = process.env.CM_BUILD_NUMBER || '1';
+          // CM_BUILD_NUMBER'a guvenmek yerine dakika bazli zaman damgasi kullaniyoruz,
+          // boylece Play Console'un "versionCode daha once kullanildi" hatasi tekrar cikmaz.
+          const buildNumber = Math.floor(Date.now() / 60000).toString();
           if (/versionCode\s+\d+/.test(content)) {
             content = content.replace(/versionCode\s+\d+/, 'versionCode ' + buildNumber);
             console.log('versionCode ' + buildNumber + ' olarak ayarlandi.');
