@@ -198,6 +198,43 @@ workflows:
       - name: Sync Capacitor with Android project
         script: |
           npx cap sync android
+      - name: MainActivity.java Google Sign-In scope duzeltmesi (capgo/social-login gereksinimi)
+        script: |
+          mkdir -p android/app/src/main/java/com/zamvu/app
+          cat > android/app/src/main/java/com/zamvu/app/MainActivity.java << 'JAVAEOF'
+          package com.zamvu.app;
+
+          import android.content.Intent;
+          import com.getcapacitor.BridgeActivity;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginHandle;
+          import ee.forgr.capacitor.social.login.GoogleProvider;
+          import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
+          import ee.forgr.capacitor.social.login.SocialLoginPlugin;
+
+          public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
+
+              @Override
+              public void onActivityResult(int requestCode, int resultCode, Intent data) {
+                  super.onActivityResult(requestCode, resultCode, data);
+
+                  if (requestCode >= GoogleProvider.REQUEST_AUTHORIZE_GOOGLE_MIN
+                          && requestCode < GoogleProvider.REQUEST_AUTHORIZE_GOOGLE_MAX) {
+                      PluginHandle pluginHandle = getBridge().getPlugin("SocialLogin");
+                      if (pluginHandle == null) return;
+
+                      Plugin plugin = pluginHandle.getInstance();
+                      if (plugin instanceof SocialLoginPlugin) {
+                          ((SocialLoginPlugin) plugin).handleGoogleLoginIntent(requestCode, data);
+                      }
+                  }
+              }
+
+              @Override
+              public void IHaveModifiedTheMainActivityForTheUseWithSocialLoginPlugin() {}
+          }
+          JAVAEOF
+          cat android/app/src/main/java/com/zamvu/app/MainActivity.java
       - name: Status bar simgelerini koyu renk yap (beyaz header uzerinde gorunsun)
         script: |
           cat > /tmp/patch_status_bar.js << 'NODEEOF'
@@ -301,6 +338,43 @@ workflows:
       - name: Sync Capacitor with Android project
         script: |
           npx cap sync android
+      - name: MainActivity.java Google Sign-In scope duzeltmesi (capgo/social-login gereksinimi)
+        script: |
+          mkdir -p android/app/src/main/java/com/zamvu/app
+          cat > android/app/src/main/java/com/zamvu/app/MainActivity.java << 'JAVAEOF'
+          package com.zamvu.app;
+
+          import android.content.Intent;
+          import com.getcapacitor.BridgeActivity;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginHandle;
+          import ee.forgr.capacitor.social.login.GoogleProvider;
+          import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
+          import ee.forgr.capacitor.social.login.SocialLoginPlugin;
+
+          public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
+
+              @Override
+              public void onActivityResult(int requestCode, int resultCode, Intent data) {
+                  super.onActivityResult(requestCode, resultCode, data);
+
+                  if (requestCode >= GoogleProvider.REQUEST_AUTHORIZE_GOOGLE_MIN
+                          && requestCode < GoogleProvider.REQUEST_AUTHORIZE_GOOGLE_MAX) {
+                      PluginHandle pluginHandle = getBridge().getPlugin("SocialLogin");
+                      if (pluginHandle == null) return;
+
+                      Plugin plugin = pluginHandle.getInstance();
+                      if (plugin instanceof SocialLoginPlugin) {
+                          ((SocialLoginPlugin) plugin).handleGoogleLoginIntent(requestCode, data);
+                      }
+                  }
+              }
+
+              @Override
+              public void IHaveModifiedTheMainActivityForTheUseWithSocialLoginPlugin() {}
+          }
+          JAVAEOF
+          cat android/app/src/main/java/com/zamvu/app/MainActivity.java
       - name: Status bar simgelerini koyu renk yap (beyaz header uzerinde gorunsun)
         script: |
           cat > /tmp/patch_status_bar.js << 'NODEEOF'
