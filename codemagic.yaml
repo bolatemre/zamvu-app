@@ -194,10 +194,29 @@ workflows:
           else
             echo "android-config/google-services.json bulunamadı, bu adım atlanıyor (push bildirimleri Android'de henüz devrede değil)."
           fi
-      - name: Use fixed debug keystore (Google Sign-In SHA-1 sabit kalsın)
+      - name: Force fixed debug signing config (Google Sign-In SHA-1 sabit kalsın)
         script: |
           mkdir -p ~/.android
           cp android-config/debug.keystore ~/.android/debug.keystore
+          cp android-config/debug.keystore android/app/debug.keystore
+          cat > /tmp/patch_build_gradle.js << 'NODEEOF'
+          const fs = require('fs');
+          const path = 'android/app/build.gradle';
+          let content = fs.readFileSync(path, 'utf8');
+          const marker = 'android {';
+          const idx = content.indexOf(marker);
+          if (idx === -1) {
+            console.error('UYARI: "android {" bloğu bulunamadı, dosya elle kontrol edilmeli.');
+            process.exit(1);
+          }
+          const insertion = `\n    signingConfigs {\n        debug {\n            storeFile file('debug.keystore')\n            storePassword 'android'\n            keyAlias 'androiddebugkey'\n            keyPassword 'android'\n        }\n    }\n`;
+          const insertAt = idx + marker.length;
+          content = content.slice(0, insertAt) + insertion + content.slice(insertAt);
+          fs.writeFileSync(path, content);
+          console.log('build.gradle guncellendi, sabit debug signingConfig eklendi.');
+          NODEEOF
+          node /tmp/patch_build_gradle.js
+          cat android/app/build.gradle | grep -A6 "signingConfigs"
       - name: Build debug APK
         script: |
           cd android
