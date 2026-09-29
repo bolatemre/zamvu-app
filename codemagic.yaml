@@ -198,6 +198,27 @@ workflows:
       - name: Sync Capacitor with Android project
         script: |
           npx cap sync android
+      - name: Status bar simgelerini koyu renk yap (beyaz header uzerinde gorunsun)
+        script: |
+          cat > /tmp/patch_status_bar.js << 'NODEEOF'
+          const fs = require('fs');
+          const path = 'android/app/src/main/res/values/styles.xml';
+          if (!fs.existsSync(path)) {
+            console.error('UYARI: styles.xml bulunamadi: ' + path);
+            process.exit(0);
+          }
+          let content = fs.readFileSync(path, 'utf8');
+          const regex = /(<style name="AppTheme"[^>]*>)/;
+          if (regex.test(content)) {
+            content = content.replace(regex, `$1\n        <item name="android:windowLightStatusBar">true</item>\n        <item name="android:statusBarColor">#FFFFFF</item>`);
+            fs.writeFileSync(path, content);
+            console.log('styles.xml guncellendi, status bar simgeleri koyu renk olacak.');
+          } else {
+            console.error('UYARI: AppTheme style bulunamadi, styles.xml elle kontrol edilmeli.');
+          }
+          NODEEOF
+          node /tmp/patch_status_bar.js
+          cat android/app/src/main/res/values/styles.xml
       - name: Copy google-services.json (Firebase push notifications, varsa)
         script: |
           if [ -f android-config/google-services.json ]; then
@@ -280,6 +301,27 @@ workflows:
       - name: Sync Capacitor with Android project
         script: |
           npx cap sync android
+      - name: Status bar simgelerini koyu renk yap (beyaz header uzerinde gorunsun)
+        script: |
+          cat > /tmp/patch_status_bar.js << 'NODEEOF'
+          const fs = require('fs');
+          const path = 'android/app/src/main/res/values/styles.xml';
+          if (!fs.existsSync(path)) {
+            console.error('UYARI: styles.xml bulunamadi: ' + path);
+            process.exit(0);
+          }
+          let content = fs.readFileSync(path, 'utf8');
+          const regex = /(<style name="AppTheme"[^>]*>)/;
+          if (regex.test(content)) {
+            content = content.replace(regex, `$1\n        <item name="android:windowLightStatusBar">true</item>\n        <item name="android:statusBarColor">#FFFFFF</item>`);
+            fs.writeFileSync(path, content);
+            console.log('styles.xml guncellendi, status bar simgeleri koyu renk olacak.');
+          } else {
+            console.error('UYARI: AppTheme style bulunamadi, styles.xml elle kontrol edilmeli.');
+          }
+          NODEEOF
+          node /tmp/patch_status_bar.js
+          cat android/app/src/main/res/values/styles.xml
       - name: Copy google-services.json (Firebase push notifications, varsa)
         script: |
           if [ -f android-config/google-services.json ]; then
