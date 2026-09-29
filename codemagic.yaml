@@ -180,6 +180,17 @@ workflows:
       - name: Add Android platform (ilk sefer)
         script: |
           npx cap add android || true
+      - name: Bump target/compile SDK to 36 (Play Store zorunlulugu)
+        script: |
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" || echo "SDK 36 kurulamadi (belki zaten var ya da isim farkli), devam ediliyor."
+          if [ -f android/variables.gradle ]; then
+            sed -i '' "s/compileSdkVersion = [0-9]*/compileSdkVersion = 36/" android/variables.gradle
+            sed -i '' "s/targetSdkVersion = [0-9]*/targetSdkVersion = 36/" android/variables.gradle
+            echo "variables.gradle guncellendi:"
+            grep -E "compileSdkVersion|targetSdkVersion" android/variables.gradle
+          else
+            echo "UYARI: android/variables.gradle bulunamadi."
+          fi
       - name: Generate app icons and splash screens
         script: |
           npm install @capacitor/assets --save-dev
@@ -251,6 +262,17 @@ workflows:
       - name: Add Android platform (ilk sefer)
         script: |
           npx cap add android || true
+      - name: Bump target/compile SDK to 36 (Play Store zorunlulugu)
+        script: |
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" || echo "SDK 36 kurulamadi (belki zaten var ya da isim farkli), devam ediliyor."
+          if [ -f android/variables.gradle ]; then
+            sed -i '' "s/compileSdkVersion = [0-9]*/compileSdkVersion = 36/" android/variables.gradle
+            sed -i '' "s/targetSdkVersion = [0-9]*/targetSdkVersion = 36/" android/variables.gradle
+            echo "variables.gradle guncellendi:"
+            grep -E "compileSdkVersion|targetSdkVersion" android/variables.gradle
+          else
+            echo "UYARI: android/variables.gradle bulunamadi."
+          fi
       - name: Generate app icons and splash screens
         script: |
           npm install @capacitor/assets --save-dev
