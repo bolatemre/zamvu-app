@@ -194,6 +194,10 @@ workflows:
           else
             echo "android-config/google-services.json bulunamadı, bu adım atlanıyor (push bildirimleri Android'de henüz devrede değil)."
           fi
+      - name: Use fixed debug keystore (Google Sign-In SHA-1 sabit kalsın)
+        script: |
+          mkdir -p ~/.android
+          cp android-config/debug.keystore ~/.android/debug.keystore
       - name: Build debug APK
         script: |
           cd android
