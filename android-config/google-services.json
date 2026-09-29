@@ -1,1 +1,46 @@
-
+{
+  "project_info": {
+    "project_number": "670703297575",
+    "project_id": "zamvu-afee6",
+    "storage_bucket": "zamvu-afee6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670703297575:android:4270645a30bde539189a02",
+        "android_client_info": {
+          "package_name": "com.zamvu.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "670703297575-qdm9kl4ekhdbv9mjofkfu5hkteu6hs7t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhd18HxFjhlDl-APgrN4UHUKpLkK2pt8c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "670703297575-qdm9kl4ekhdbv9mjofkfu5hkteu6hs7t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "670703297575-s8bona5d3dsjqns38qnaglgipr9qgjgk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.zamvu.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
