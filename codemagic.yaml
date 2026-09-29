@@ -280,13 +280,18 @@ workflows:
           const aInsertAt = aIdx + androidMarker.length;
           content = content.slice(0, aInsertAt) + signingInsertion + content.slice(aInsertAt);
 
-          const releaseMarker = 'release {';
-          const rIdx = content.indexOf(releaseMarker);
-          if (rIdx !== -1) {
-            const rInsertAt = rIdx + releaseMarker.length;
-            content = content.slice(0, rInsertAt) + `\n            signingConfig signingConfigs.release` + content.slice(rInsertAt);
+          const buildTypesIdx = content.indexOf('buildTypes {');
+          if (buildTypesIdx === -1) {
+            console.error('UYARI: buildTypes { bulunamadi, signingConfig atanamadi.');
           } else {
-            console.error('UYARI: buildTypes.release blogu bulunamadi, signingConfig atanamadi.');
+            const releaseMarker = 'release {';
+            const rIdx = content.indexOf(releaseMarker, buildTypesIdx);
+            if (rIdx !== -1) {
+              const rInsertAt = rIdx + releaseMarker.length;
+              content = content.slice(0, rInsertAt) + `\n            signingConfig signingConfigs.release` + content.slice(rInsertAt);
+            } else {
+              console.error('UYARI: buildTypes.release blogu bulunamadi, signingConfig atanamadi.');
+            }
           }
 
           const buildNumber = process.env.CM_BUILD_NUMBER || '1';
