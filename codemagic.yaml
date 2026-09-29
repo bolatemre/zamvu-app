@@ -223,6 +223,21 @@ workflows:
                   // Android 15+ (targetSdk 35+) edge-to-edge'i zorunlu kildigi icin
                   // styles.xml uzerinden statusBarColor/windowLightStatusBar artik islemiyor.
                   // Status bar ikonlarini (saat, batarya vb.) koyu renk yapmak icin runtime'da ayarliyoruz.
+                  applyLightStatusBar();
+              }
+
+              @Override
+              public void onWindowFocusChanged(boolean hasFocus) {
+                  super.onWindowFocusChanged(hasFocus);
+                  // Splash screen kapanirken (veya baska bir plugin) pencere
+                  // ayarlarini sifirlayabiliyor; her fokus kazandiginda tekrar uyguluyoruz
+                  // ki saat/sarj/sinyal ikonlari beyaz header uzerinde kaybolmasin.
+                  if (hasFocus) {
+                      applyLightStatusBar();
+                  }
+              }
+
+              private void applyLightStatusBar() {
                   WindowInsetsControllerCompat controller =
                       WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
                   controller.setAppearanceLightStatusBars(true);
@@ -377,6 +392,21 @@ workflows:
                   // Android 15+ (targetSdk 35+) edge-to-edge'i zorunlu kildigi icin
                   // styles.xml uzerinden statusBarColor/windowLightStatusBar artik islemiyor.
                   // Status bar ikonlarini (saat, batarya vb.) koyu renk yapmak icin runtime'da ayarliyoruz.
+                  applyLightStatusBar();
+              }
+
+              @Override
+              public void onWindowFocusChanged(boolean hasFocus) {
+                  super.onWindowFocusChanged(hasFocus);
+                  // Splash screen kapanirken (veya baska bir plugin) pencere
+                  // ayarlarini sifirlayabiliyor; her fokus kazandiginda tekrar uyguluyoruz
+                  // ki saat/sarj/sinyal ikonlari beyaz header uzerinde kaybolmasin.
+                  if (hasFocus) {
+                      applyLightStatusBar();
+                  }
+              }
+
+              private void applyLightStatusBar() {
                   WindowInsetsControllerCompat controller =
                       WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
                   controller.setAppearanceLightStatusBars(true);
